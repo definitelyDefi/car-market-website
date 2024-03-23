@@ -1,0 +1,112 @@
+// Схема даних для вебсайту - автомобільного ринку
+
+datasource db {
+  provider = "postgresql"
+  url      = "env(DATABASE_URL)"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        Int     @id @default(autoincrement())
+  name      String
+  surname   String
+  email     String  @unique
+  password  String
+  phone     String
+  address   String
+  role      Role    @relation(fields: [roleId], references: [id])
+  roleId    Int
+  createdAt DateTime @default(now())
+
+  @@map("users")
+}
+
+model Role {
+  id        Int     @id @default(autoincrement())
+  name      String  @unique
+  description String
+
+  @@map("roles")
+}
+
+model Car {
+  id          Int     @id @default(autoincrement())
+  make        String
+  model       String
+  year        Int
+  mileage     Int
+  bodyType    String
+  color       String
+  engine      String
+  transmission String
+  drive       String
+  price       Decimal
+  description String
+  photo       String
+  status      Status  @relation(fields: [statusId], references: [id])
+  statusId    Int
+  user        User    @relation(fields: [userId], references: [id])
+  userId      Int
+
+  @@map("cars")
+}
+
+model Status {
+  id        Int     @id @default(autoincrement())
+  name      String  @unique
+  description String
+
+  @@map("statuses")
+}
+
+model Listing {
+  id          Int     @id @default(autoincrement())
+  title       String
+  text        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+  user        User    @relation(fields: [userId], references: [id])
+  userId      Int
+  car         Car     @relation(fields: [carId], references: [id])
+  carId       Int
+
+  @@map("listings")
+}
+
+model Image {
+  id        Int     @id @default(autoincrement())
+  name      String
+  path       String
+  car        Car     @relation(fields: [carId], references: [id])
+  carId      Int
+
+  @@map("images")
+}
+
+model Review {
+  id         Int     @id @default(autoincrement())
+  text        String
+  date        DateTime @default(now())
+  rating      Int
+  user        User    @relation(fields: [userId], references: [id])
+  userId      Int
+  car         Car     @relation(fields: [carId], references: [id])
+  carId       Int
+
+  @@map("reviews")
+}
+
+model Message {
+  id          Int     @id @default(autoincrement())
+  text        String
+  date        DateTime @default(now())
+  sender      User    @relation(fields: [senderId], references: [id])
+  senderId    Int
+  receiver    User    @relation(fields: [receiverId], references: [id])
+  receiverId Int
+
+  @@map("messages")
+}
